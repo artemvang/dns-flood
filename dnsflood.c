@@ -228,11 +228,12 @@ int main(int argc, char **argv)
 	int sleep_interval = 0;	/* interval (in millisecond) between two packets */
 
 	int random_ip = 0;
+	int quiet = 0;
 	int static_ip = 0;
 
 	int arg_options;
 
-	const char *short_options = "f:t:p:P:Drs:i:n:h";
+	const char *short_options = "f:t:p:P:Drs:i:n:q:h";
 
 	const struct option long_options[] = {
 		{"type", required_argument, NULL, 't'},
@@ -244,6 +245,7 @@ int main(int argc, char **argv)
 		{"source-ip", required_argument, NULL, 's'},
 		{"interval", required_argument, NULL, 'i'},
 		{"number", required_argument, NULL, 'n'},
+		{"quiet", required_argument, NULL, 'q'},
 		{"help", no_argument, NULL, 'h'},
 		{NULL, 0, NULL, 0}
 	};
@@ -306,6 +308,10 @@ int main(int argc, char **argv)
 				printf("bad query type\n");
 				quit = 1;
 			}
+			break;
+
+		case 'q':
+			quiet = 1;
 			break;
 
 		case 'h':
@@ -419,8 +425,8 @@ int main(int argc, char **argv)
 
 		ret = sendto(sock, iphdr, sizeof(struct ip) + ip_datalen, 0,
 				(struct sockaddr *) &sin_dst, sizeof(struct sockaddr));
-		if (ret == -1) {
-			// perror("sendto error");
+		if (ret == -1 && !quiet) {
+			perror("sendto error");
 		}
 
 		count++;
